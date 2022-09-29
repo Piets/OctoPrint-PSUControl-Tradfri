@@ -1,0 +1,25 @@
+<!-- ko ifnot: settings.plugins.psucontrol -->
+<span class="help-inline label label-important">This plugin requires <a href="https://plugins.octoprint.org/plugins/psucontrol/" target="_blank">PSU Control</a> in order to function. It can be installed from the Plugin Manager.</span>
+<!-- /ko -->
+
+<form class="form-horizontal">
+    <h4>General</h4>
+    <div class="control-group">
+        <label class="control-label">Address</label>
+        <div class="controls">
+            <input type="text" class="input" data-bind="value: settings.plugins.psucontrol_tradfri.address" placeholder="127.0.0.1">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Security Key</label>
+        <div class="controls">
+            <input type="text" class="input" data-bind="value: settings.plugins.psucontrol_tradfri.security_key" placeholder="ABC...">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Plug Name</label>
+        <div class="controls">
+            <input type="text" class="input" data-bind="value: settings.plugins.psucontrol_tradfri.plug" placeholder="3D Printer (case sensitive)">
+        </div>
+    </div>
+</form>

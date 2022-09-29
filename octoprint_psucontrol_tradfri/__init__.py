@@ -24,17 +24,15 @@ class Psucontrol_tradfriPlugin(
 
     def turn_psu_on(self):
         if self.device is not None:
-            api = self.api_factory.request
             socket_command = self.device.socket_control.set_state(True)
-            api(socket_command)
+            self.api_factory.request(socket_command)
         else:
             self._logger.info("Device is not set")
 
     def turn_psu_off(self):
         if self.device is not None:
-            api = self.api_factory.request
             socket_command = self.device.socket_control.set_state(False)
-            api(socket_command)
+            self.api_factory.request(socket_command)
         else:
             self._logger.info("Device is not set")
 
@@ -92,7 +90,7 @@ class Psucontrol_tradfriPlugin(
             self.find_tradfri_device()
             return
 
-        if self.config.get("address") is "" or self.config.get("plug") is "" or self.config.get("security_key") is "":
+        if self.config.get("address") == "" or self.config.get("plug") == "" or self.config.get("security_key") == "":
             self._logger.info("Address, Plug or Security Key not set")
             return
 
@@ -100,10 +98,10 @@ class Psucontrol_tradfriPlugin(
         security_key = self.config.get("security_key")
 
         identity = uuid.uuid4().hex
-        if self.config.get("identity") is not "":
+        if self.config.get("identity") != "":
             identity = self.config.get("identity")
 
-        if self.config.get("psk") is not "":
+        if self.config.get("psk") != "":
             psk = self.config.get("psk")
             self.api_factory = APIFactory(host=host, psk_id=identity, psk=psk, timeout=120)
         else:

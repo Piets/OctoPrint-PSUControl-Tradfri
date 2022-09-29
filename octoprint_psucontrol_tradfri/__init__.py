@@ -105,9 +105,9 @@ class Psucontrol_tradfriPlugin(
 
         if self.config.get("psk") is not "":
             psk = self.config.get("psk")
-            self.api_factory = APIFactory(host=host, psk_id=identity, psk=psk, timeout=20)
+            self.api_factory = APIFactory(host=host, psk_id=identity, psk=psk, timeout=120)
         else:
-            self.api_factory = APIFactory(host=host, psk_id=identity, timeout=20)
+            self.api_factory = APIFactory(host=host, psk_id=identity, timeout=120)
             psk = self.api_factory.generate_psk(security_key)
             self._settings.set(["identity"], identity)
             self._settings.set(["psk"], psk)

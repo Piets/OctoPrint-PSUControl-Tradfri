@@ -2,10 +2,13 @@
 from __future__ import absolute_import
 
 import uuid
+import threading
+import time
 import octoprint.plugin
 
 from pytradfri import Gateway
 from pytradfri.api.libcoap_api import APIFactory
+from pytradfri.resource import ApiResource
 from pytradfri.device import Device
 
 class Psucontrol_tradfriPlugin(
@@ -26,6 +29,7 @@ class Psucontrol_tradfriPlugin(
         if self.device is not None:
             socket_command = self.device.socket_control.set_state(True)
             self.api_factory.request(socket_command)
+            self.state = True
         else:
             self._logger.info("Device is not set")
 
@@ -33,12 +37,11 @@ class Psucontrol_tradfriPlugin(
         if self.device is not None:
             socket_command = self.device.socket_control.set_state(False)
             self.api_factory.request(socket_command)
+            self.state = False
         else:
             self._logger.info("Device is not set")
 
     def get_psu_state(self):
-        if self.device is not None:
-            self.find_tradfri_device()
         return self.state
 
     ##~~ StartupPlugin mixin
@@ -125,8 +128,26 @@ class Psucontrol_tradfriPlugin(
 
         for dev in devices:
             if dev.name == self.config.get("plug"):
+                self._logger.info("Found device")
                 self.device = dev
                 self.state = dev.socket_control.sockets[0].state
+                self.observe(api, dev)
+
+    def observe(self, api, device: Device) -> None:
+        def callback(updated_device: ApiResource) -> None:
+            self._logger.info("Device Updated")
+            assert isinstance(updated_device, Device)
+            assert updated_device.socket_control is not None
+            self.state = updated_device.socket_control.sockets[0].state
+
+        def err_callback(err: Exception) -> None:
+            print(err)
+
+        def worker() -> None:
+            while True:
+                api(device.observe(callback, err_callback, duration=120))
+
+        threading.Thread(target=worker, daemon=True).start()
 
     ##~~ TemplatePlugin hook
 
